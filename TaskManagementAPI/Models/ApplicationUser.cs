@@ -9,8 +9,7 @@ namespace TaskManagementAPI.Models
 
         public string JobTitle { get; set; }
 
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
-
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public List<TaskItem> AssignedTasks { get; set; }
     }
 }

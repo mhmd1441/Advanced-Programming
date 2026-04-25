@@ -4,16 +4,14 @@ using TaskManagementAPI.Models;
 
 namespace TaskManagementAPI.Data
 {
-public class ApplicationDbContext
-{
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-        : base(options)
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
-    }
-
-    public DbSet<TaskItem> TaskItems { get; set; }
-    public DbSet<Category> Categories
-    {
-        get; set;
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+            : base(options)
+        {
         }
+
+        public DbSet<TaskItem> TaskItems { get; set; }
+        public DbSet<Category> Categories { get; set; }
+    }
 }

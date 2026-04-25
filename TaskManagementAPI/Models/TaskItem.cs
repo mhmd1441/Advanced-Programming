@@ -11,8 +11,7 @@
         public string Priority { get; set; }
 
         public DateTime DueDate { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
-
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public int CategoryId { get; set; }
         public Category Category { get; set; }
 
