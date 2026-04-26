@@ -5,6 +5,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using TaskManagementAPI.Data;
 using TaskManagementAPI.Models;
+using TaskManagementAPI.Services;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,7 +40,8 @@ builder.Services.AddAuthentication(options =>
             )
         };
     });
-
+builder.Services.AddScoped<ITaskService, TaskService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 var app = builder.Build();
 
 app.UseHttpsRedirection();

@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using TaskManagementAPI.Data;
 using TaskManagementAPI.DTOs;
-using TaskManagementAPI.Models;
+using TaskManagementAPI.Services;
 
 namespace TaskManagementAPI.Controllers
 {
@@ -12,24 +10,24 @@ namespace TaskManagementAPI.Controllers
     [Authorize]
     public class CategoriesController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ICategoryService _categoryService;
 
-        public CategoriesController(ApplicationDbContext context)
+        public CategoriesController(ICategoryService categoryService)
         {
-            _context = context;
+            _categoryService = categoryService;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var categories = await _context.Categories.ToListAsync();
+            var categories = await _categoryService.GetAllAsync();
             return Ok(categories);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var category = await _context.Categories.FindAsync(id);
+            var category = await _categoryService.GetByIdAsync(id);
 
             if (category == null)
                 return NotFound("Category not found");
@@ -40,30 +38,17 @@ namespace TaskManagementAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(CategoryCreateDto dto)
         {
-            var category = new Category
-            {
-                Name = dto.Name,
-                Description = dto.Description
-            };
-
-            _context.Categories.Add(category);
-            await _context.SaveChangesAsync();
-
+            var category = await _categoryService.CreateAsync(dto);
             return Ok(category);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, CategoryCreateDto dto)
         {
-            var category = await _context.Categories.FindAsync(id);
+            var category = await _categoryService.UpdateAsync(id, dto);
 
             if (category == null)
                 return NotFound("Category not found");
-
-            category.Name = dto.Name;
-            category.Description = dto.Description;
-
-            await _context.SaveChangesAsync();
 
             return Ok(category);
         }
@@ -72,13 +57,10 @@ namespace TaskManagementAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var category = await _context.Categories.FindAsync(id);
+            var deleted = await _categoryService.DeleteAsync(id);
 
-            if (category == null)
+            if (!deleted)
                 return NotFound("Category not found");
-
-            _context.Categories.Remove(category);
-            await _context.SaveChangesAsync();
 
             return Ok("Category deleted successfully");
         }
