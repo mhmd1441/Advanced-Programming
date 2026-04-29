@@ -1,0 +1,88 @@
+@model List<TaskManagementMvc.ViewModels.TaskItemViewModel>
+
+@{
+    ViewData["Title"] = "Tasks";
+    var role = ViewBag.UserRole as string ?? "Employee";
+    var canCreate = role == "Admin" || role == "Employee";
+    var canEdit = role == "Admin" || role == "Manager";
+    var canDelete = role == "Admin";
+}
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+    <h1 class="h3 mb-0">Tasks</h1>
+    @if (canCreate)
+    {
+        <a asp-action="Create" class="btn btn-primary">New Task</a>
+    }
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}
+
+<div class="table-responsive">
+    <table class="table table-striped align-middle">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Status</th>
+                <th>Priority</th>
+                <th>Due</th>
+                <th>Category</th>
+                <th>Assigned To</th>
+                <th class="text-end">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var task in Model)
+        {
+            <tr>
+                <td>@task.Title</td>
+                <td>@task.Status</td>
+                <td>@task.Priority</td>
+                <td>@task.DueDate.ToString("yyyy-MM-dd")</td>
+                <td>@task.Category?.Name</td>
+                <td>
+                    @if (task.AssignedToUser == null)
+                    {
+                        <span class="text-muted">Unassigned</span>
+                    }
+                    else
+                    {
+                        <span>@task.AssignedToUser.FirstName @task.AssignedToUser.LastName</span>
+                    }
+                </td>
+                <td class="text-end">
+                    <a asp-action="Details" asp-route-id="@task.Id" class="btn btn-sm btn-outline-secondary">Details</a>
+                    @if (canEdit)
+                    {
+                        <a asp-action="Edit" asp-route-id="@task.Id" class="btn btn-sm btn-outline-primary">
+                            @(role == "Manager" ? "Assign" : "Edit")
+                        </a>
+                    }
+                    @if (canDelete)
+                    {
+                        <form asp-action="Delete" asp-route-id="@task.Id" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="text-muted">No tasks found.</div>
+}

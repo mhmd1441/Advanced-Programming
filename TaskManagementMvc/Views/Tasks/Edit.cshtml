@@ -1,0 +1,21 @@
+@model TaskManagementMvc.ViewModels.TaskFormViewModel
+
+@{
+    ViewData["Title"] = "Edit Task";
+}
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+    <h1 class="h3 mb-0">Edit Task</h1>
+    <a asp-action="Index" class="btn btn-outline-secondary">Back</a>
+</div>
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}
+
+<partial name="_TaskForm" model="Model" />
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using System.Diagnostics;
 using TaskManagementMvc.Models;
 
@@ -15,6 +16,9 @@ namespace TaskManagementMvc.Controllers
 
         public IActionResult Index()
         {
+            if (string.IsNullOrWhiteSpace(HttpContext.Session.GetString("JWToken")))
+                return RedirectToAction("Login", "Auth");
+
             return View();
         }
 

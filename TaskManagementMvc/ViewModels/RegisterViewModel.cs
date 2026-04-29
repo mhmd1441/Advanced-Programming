@@ -1,8 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
-namespace TaskManagementAPI.DTOs
+namespace TaskManagementMvc.ViewModels
 {
-    public class RegisterDto
+    public class RegisterViewModel
     {
         [Required]
         public string FirstName { get; set; } = string.Empty;
@@ -22,6 +22,7 @@ namespace TaskManagementAPI.DTOs
 
         [Required]
         [MinLength(8)]
+        [DataType(DataType.Password)]
         public string Password { get; set; } = string.Empty;
     }
 }

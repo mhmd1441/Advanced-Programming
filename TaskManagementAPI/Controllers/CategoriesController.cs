@@ -35,6 +35,7 @@ namespace TaskManagementAPI.Controllers
             return Ok(category);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> Create(CategoryCreateDto dto)
         {
@@ -42,6 +43,7 @@ namespace TaskManagementAPI.Controllers
             return Ok(category);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, CategoryCreateDto dto)
         {

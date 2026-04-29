@@ -4,12 +4,12 @@ namespace TaskManagementAPI.Models
 {
     public class ApplicationUser : IdentityUser
     {
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
+        public string FirstName { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
 
-        public string JobTitle { get; set; }
+        public string JobTitle { get; set; } = string.Empty;
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public List<TaskItem> AssignedTasks { get; set; }
+        public List<TaskItem> AssignedTasks { get; set; } = new();
     }
 }

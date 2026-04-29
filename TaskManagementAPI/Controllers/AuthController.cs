@@ -49,15 +49,13 @@ namespace TaskManagementAPI.Controllers
 
             if (!result.Succeeded)
                 return BadRequest(result.Errors);
-            var allowedRoles = new List<string> { "Admin", "Manager", "Employee" };
 
-            if (!allowedRoles.Contains(dto.Role))
-                return BadRequest("Invalid role");
+            const string defaultRole = "Employee";
 
-            if (!await _roleManager.RoleExistsAsync(dto.Role))
-                await _roleManager.CreateAsync(new IdentityRole(dto.Role));
+            if (!await _roleManager.RoleExistsAsync(defaultRole))
+                await _roleManager.CreateAsync(new IdentityRole(defaultRole));
 
-            await _userManager.AddToRoleAsync(user, dto.Role);
+            await _userManager.AddToRoleAsync(user, defaultRole);
             return Ok("User registered successfully");
 
         }

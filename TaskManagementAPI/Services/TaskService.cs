@@ -14,11 +14,17 @@ namespace TaskManagementAPI.Services
             _context = context;
         }
 
-        public async Task<object> GetAllAsync()
+        public async Task<object> GetAllAsync(string currentUserId, bool canViewAllTasks)
         {
-            var tasks = await _context.TaskItems
+            var query = _context.TaskItems
                 .Include(t => t.Category)
                 .Include(t => t.AssignedToUser)
+                .AsQueryable();
+
+            if (!canViewAllTasks)
+                query = query.Where(t => t.AssignedToUserId == currentUserId);
+
+            var tasks = await query
                 .Select(t => new
                 {
                     t.Id,
@@ -46,12 +52,17 @@ namespace TaskManagementAPI.Services
             return tasks;
         }
 
-        public async Task<object?> GetByIdAsync(int id)
+        public async Task<object?> GetByIdAsync(int id, string currentUserId, bool canViewAllTasks)
         {
-            return await _context.TaskItems
+            var query = _context.TaskItems
                 .Include(t => t.Category)
                 .Include(t => t.AssignedToUser)
-                .Where(t => t.Id == id)
+                .Where(t => t.Id == id);
+
+            if (!canViewAllTasks)
+                query = query.Where(t => t.AssignedToUserId == currentUserId);
+
+            return await query
                 .Select(t => new
                 {
                     t.Id,
@@ -77,16 +88,18 @@ namespace TaskManagementAPI.Services
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<object?> CreateAsync(TaskCreateDto dto)
+        public async Task<object?> CreateAsync(TaskCreateDto dto, string currentUserId, bool canAssignToOthers)
         {
             var categoryExists = await _context.Categories.AnyAsync(c => c.Id == dto.CategoryId);
 
             if (!categoryExists)
                 return null;
 
-            if (dto.AssignedToUserId != null)
+            var assignedUserId = canAssignToOthers ? dto.AssignedToUserId : currentUserId;
+
+            if (assignedUserId != null)
             {
-                var userExists = await _context.Users.AnyAsync(u => u.Id == dto.AssignedToUserId);
+                var userExists = await _context.Users.AnyAsync(u => u.Id == assignedUserId);
 
                 if (!userExists)
                     return null;
@@ -101,10 +114,31 @@ namespace TaskManagementAPI.Services
                 DueDate = dto.DueDate.ToUniversalTime(),
                 CreatedAt = DateTime.UtcNow,
                 CategoryId = dto.CategoryId,
-                AssignedToUserId = dto.AssignedToUserId
+                AssignedToUserId = assignedUserId
             };
 
             _context.TaskItems.Add(task);
+            await _context.SaveChangesAsync();
+
+            return task;
+        }
+
+        public async Task<object?> UpdateAssignmentAsync(int id, TaskAssignmentDto dto)
+        {
+            var task = await _context.TaskItems.FindAsync(id);
+
+            if (task == null)
+                return null;
+
+            if (dto.AssignedToUserId != null)
+            {
+                var userExists = await _context.Users.AnyAsync(u => u.Id == dto.AssignedToUserId);
+
+                if (!userExists)
+                    return null;
+            }
+
+            task.AssignedToUserId = dto.AssignedToUserId;
             await _context.SaveChangesAsync();
 
             return task;
@@ -116,6 +150,19 @@ namespace TaskManagementAPI.Services
 
             if (task == null)
                 return null;
+
+            var categoryExists = await _context.Categories.AnyAsync(c => c.Id == dto.CategoryId);
+
+            if (!categoryExists)
+                return null;
+
+            if (dto.AssignedToUserId != null)
+            {
+                var userExists = await _context.Users.AnyAsync(u => u.Id == dto.AssignedToUserId);
+
+                if (!userExists)
+                    return null;
+            }
 
             task.Title = dto.Title;
             task.Description = dto.Description;

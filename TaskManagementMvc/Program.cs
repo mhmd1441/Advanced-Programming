@@ -4,6 +4,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddHttpClient();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<TaskManagementMvc.Services.IApiClient, TaskManagementMvc.Services.ApiClient>();
 builder.Services.AddSession();
 var app = builder.Build();
 

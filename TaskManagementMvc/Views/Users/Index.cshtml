@@ -1,0 +1,65 @@
+@model List<TaskManagementMvc.ViewModels.UserManagementViewModel>
+
+@{
+    ViewData["Title"] = "User Management";
+    var roles = new[] { "Employee", "Manager", "Admin" };
+}
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+    <h1 class="h3 mb-0">User Management</h1>
+    <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">Dashboard</a>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}
+
+<div class="table-responsive">
+    <table class="table table-striped align-middle">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Job Title</th>
+                <th>Current Role</th>
+                <th class="text-end">Change Role</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.FirstName @user.LastName</td>
+                <td>@user.Email</td>
+                <td>@user.JobTitle</td>
+                <td>@user.Role</td>
+                <td class="text-end">
+                    <form asp-action="UpdateRole" asp-route-id="@user.Id" method="post" class="d-inline-flex gap-2">
+                        <select name="Role" class="form-select form-select-sm" style="width: 140px;">
+                            @foreach (var role in roles)
+                            {
+                                <option value="@role" selected="@(role == user.Role)">@role</option>
+                            }
+                        </select>
+                        <button type="submit" class="btn btn-sm btn-primary">Save</button>
+                    </form>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+
+@if (!Model.Any() && ViewBag.Error == null)
+{
+    <div class="text-muted">No users found.</div>
+}
