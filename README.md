@@ -172,17 +172,17 @@ Implemented screens:
 
 ```text
 TaskManagementSolution
-├── TaskManagementAPI
-│   ├── Controllers
-│   ├── Data
-│   ├── DTOs
-│   ├── Migrations
-│   ├── Models
-│   └── Services
-└── TaskManagementMvc
-    ├── Controllers
-    ├── Services
-    ├── ViewModels
-    ├── Views
-    └── wwwroot
+|-- TaskManagementAPI
+|   |-- Controllers
+|   |-- Data
+|   |-- DTOs
+|   |-- Migrations
+|   |-- Models
+|   `-- Services
+`-- TaskManagementMvc
+    |-- Controllers
+    |-- Services
+    |-- ViewModels
+    |-- Views
+    `-- wwwroot
 ```
